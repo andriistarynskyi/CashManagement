@@ -1,8 +1,9 @@
 package repository;
 
-import entitites.MerchantReport;
+import entitites.Merchant;
+import entitites.report.MerchantReport;
+import repository.utils.DbConnection;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,32 +12,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MerchantReportRepo {
-    public List<MerchantReport> getMerChantReport() throws SQLException, IOException {
+
+    MerchantRepo merchantRepo = new MerchantRepo();
+
+    public List<MerchantReport> getMerChantReport() {
         List<MerchantReport> merchantReports = new ArrayList<>();
 
-        String sqlQuery = "SELECT m.id           AS merchantId,\n" +
-                "       m.name         AS merchantName,\n" +
+        String sqlQuery = "SELECT m.name           AS merchantName,\n" +
                 "       SUM(p.sumPaid) AS totalPaid,\n" +
                 "       m.lastSent     AS lastSent\n" +
                 "FROM merchants m,\n" +
                 "     payments p\n" +
                 "WHERE m.id = p.merchantId\n" +
                 "GROUP BY m.name, m.id\n" +
-                "ORDER BY m.id;";
+                "ORDER BY m.id";
         try (
-                Connection conn = DbConnection.get();
+                Connection conn = DbConnection.getConnection();
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
         ) {
             ResultSet rs = statement.executeQuery();
-            MerchantReport merchantReport;
+            Merchant merchant;
             while (rs.next()) {
-                int id = rs.getInt("merchantId");
-                String name = rs.getString("merchantName");
+                String merchantName = rs.getString("merchantName");
                 double sumPaid = rs.getDouble("totalPaid");
                 double lastSent = rs.getDouble("lastSent");
 
-                merchantReports.add(new MerchantReport(id, name, sumPaid, lastSent));
+                merchantReports.add(new MerchantReport(merchantRepo.getByName(merchantName), sumPaid, lastSent));
             }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
         return merchantReports;
     }

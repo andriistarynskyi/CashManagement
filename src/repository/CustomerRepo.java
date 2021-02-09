@@ -1,6 +1,7 @@
 package repository;
 
 import entitites.Customer;
+import repository.utils.DbConnection;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -11,9 +12,9 @@ import java.time.LocalDate;
 import java.util.Set;
 
 public class CustomerRepo {
-    public void add(Set<Customer> customerList) throws IOException, SQLException {
+    public void saveAll(Set<Customer> customerList) throws IOException {
         String sqlQuery = "INSERT INTO customers(name, address, email, ccNo, ccType, maturity) values(?, ?, ?, ?, ?, ? )";
-        try (Connection conn = DbConnection.get();
+        try (Connection conn = DbConnection.getConnection();
              PreparedStatement statement = conn.prepareStatement(sqlQuery);
         ) {
             for (Customer c : customerList) {
@@ -26,14 +27,16 @@ public class CustomerRepo {
                 statement.addBatch();
             }
             statement.executeBatch();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
     }
 
-    public Customer get(String name) throws IOException, SQLException {
+    public Customer getByName(String name) throws IOException {
         Customer customer = null;
         String sqlQuery = "SELECT * FROM customers WHERE name = ?";
         try (
-                Connection conn = DbConnection.get();
+                Connection conn = DbConnection.getConnection();
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
         ) {
             statement.setString(1, name);
@@ -48,6 +51,8 @@ public class CustomerRepo {
                 LocalDate maturity = rs.getDate("maturity").toLocalDate();
                 customer = new Customer(id, customerName, address, email, ccNo, ccType, maturity);
             }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
         return customer;
     }

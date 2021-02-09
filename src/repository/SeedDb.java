@@ -8,25 +8,28 @@ import services.MerchantService;
 import services.PaymentService;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
 public class SeedDb {
-    public void add() throws IOException, SQLException {
+    public void saveAll() {
         CustomerService customerService = new CustomerService();
         CustomerRepo customerRepo = new CustomerRepo();
         Set<Customer> customersList = customerService.getCustomersFromFile();
-        customerRepo.add(customersList);
+        try {
+            customerRepo.saveAll(customersList);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         MerchantService merchantService = new MerchantService();
         List<Merchant> merchantsList = merchantService.getMerchantFromFile();
         MerchantRepo merchantRepo = new MerchantRepo();
-        merchantRepo.add(merchantsList);
+        merchantRepo.saveAll(merchantsList);
 
         PaymentService paymentService = new PaymentService();
         Set<Payment> paymentsList = paymentService.getPaymentsFromFile();
         PaymentRepo paymentRepo = new PaymentRepo();
-        paymentRepo.add(paymentsList);
+        paymentRepo.addAll(paymentsList);
     }
 }

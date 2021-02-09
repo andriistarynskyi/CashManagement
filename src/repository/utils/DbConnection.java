@@ -1,4 +1,4 @@
-package repository;
+package repository.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,16 +10,22 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class DbConnection {
-    public static Connection get() throws IOException, SQLException {
-        Connection conn;
+    public static Connection getConnection() {
+        Connection conn = null;
         Properties props = new Properties();
-        try (BufferedReader in = Files.newBufferedReader(Path.of("C:\\Users\\astar\\IdeaProjects\\CashManagement\\app.properties"))) {
+        try (BufferedReader in = Files.newBufferedReader(Path.of("app.properties"))) {
             props.load(in);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         String url = props.getProperty("urlAddress");
         String name = props.getProperty("userName");
         String pass = props.getProperty("password");
-        conn = DriverManager.getConnection(url, name, pass);
+        try {
+            conn = DriverManager.getConnection(url, name, pass);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
         return conn;
     }
 }

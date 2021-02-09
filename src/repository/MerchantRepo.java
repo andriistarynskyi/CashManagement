@@ -1,8 +1,8 @@
 package repository;
 
 import entitites.Merchant;
+import repository.utils.DbConnection;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MerchantRepo {
-    public void add(List<Merchant> merchantList) throws IOException, SQLException {
+    public void saveAll(List<Merchant> merchantList) {
 
         for (Merchant m : merchantList) {
             String sqlQuery = "INSERT IGNORE INTO merchants " +
@@ -20,7 +20,7 @@ public class MerchantRepo {
                     "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             try (
-                    Connection conn = DbConnection.get();
+                    Connection conn = DbConnection.getConnection();
                     PreparedStatement statement = conn.prepareStatement(sqlQuery);
             ) {
                 statement.setString(1, m.getName());
@@ -39,15 +39,17 @@ public class MerchantRepo {
                 }
                 statement.addBatch();
                 statement.executeBatch();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
             }
         }
     }
 
-    public Merchant get(String name) throws IOException, SQLException {
+    public Merchant getByName(String name) {
         Merchant merchant = null;
         String sqlQuery = "SELECT * FROM merchants WHERE name = ?";
         try (
-                Connection conn = DbConnection.get();
+                Connection conn = DbConnection.getConnection();
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
         ) {
             statement.setString(1, name);
@@ -55,11 +57,13 @@ public class MerchantRepo {
             while (rs.next()) {
                 merchant = getMerchant(rs);
             }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
         return merchant;
     }
 
-    public Merchant getMerchant(ResultSet rs) throws SQLException {
+    private Merchant getMerchant(ResultSet rs) throws SQLException {
         Merchant merchant = null;
         int id = rs.getInt("id");
         String merchantName = rs.getString("name");
@@ -83,11 +87,11 @@ public class MerchantRepo {
         return merchant;
     }
 
-    public List<Merchant> getSortedList() throws IOException, SQLException {
+    public List<Merchant> getAllInAlphabeticalOrder() {
         List<Merchant> sortedMerchantsList = new ArrayList<>();
         String sqlQuery = "SELECT * FROM merchants ORDER BY name";
         try (
-                Connection conn = DbConnection.get();
+                Connection conn = DbConnection.getConnection();
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
         ) {
             ResultSet rs = statement.executeQuery();
@@ -95,15 +99,18 @@ public class MerchantRepo {
                 Merchant merchant = getMerchant(rs);
                 sortedMerchantsList.add(merchant);
             }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
         return sortedMerchantsList;
     }
 
-    public void update(Merchant merchant) throws IOException, SQLException {
-        String sqlQuery = "UPDATE merchants SET needToSend = ?, sent = ?, lastSent = ? WHERE name = ?";
+    public void update(Merchant merchant) {
+        String sqlQuery = "UPDATE merchants SET " +
+                "needToSend = ?, sent = ?, lastSent = ? WHERE name = ?";
 
         try (
-                Connection conn = DbConnection.get();
+                Connection conn = DbConnection.getConnection();
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
         ) {
             statement.setDouble(1, merchant.getSentAmount());
@@ -115,6 +122,8 @@ public class MerchantRepo {
             }
             statement.setString(4, merchant.getName());
             statement.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
     }
 }

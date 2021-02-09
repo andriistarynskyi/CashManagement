@@ -1,5 +1,5 @@
 import entitites.Merchant;
-import entitites.MerchantReport;
+import entitites.report.MerchantReport;
 import repository.MerchantRepo;
 import repository.MerchantReportRepo;
 import repository.PaymentRepo;
@@ -16,7 +16,7 @@ public class Main {
 
 //        seed data from files
         SeedDb seeDb = new SeedDb();
-        seeDb.add();
+        seeDb.saveAll();
 
 //        create custom vendor report
         MerchantReportRepo merchantReportRepo = new MerchantReportRepo();
@@ -27,7 +27,7 @@ public class Main {
 
 //        get sorted list of merchants in alphabetical order
         MerchantRepo merchantRepo = new MerchantRepo();
-        List<Merchant> merchantList = merchantRepo.getSortedList();
+        List<Merchant> merchantList = merchantRepo.getAllInAlphabeticalOrder();
         for (Merchant merchant : merchantList) {
             System.out.println(merchant);
         }

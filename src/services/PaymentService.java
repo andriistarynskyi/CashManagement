@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 public class PaymentService {
-    public Set<Payment> getPaymentsFromFile() throws IOException, SQLException {
+    public Set<Payment> getPaymentsFromFile() {
         CustomerRepo customerRepo = new CustomerRepo();
         MerchantRepo merchantRepo = new MerchantRepo();
         Set<Payment> paymentsList = new HashSet<>();
@@ -24,11 +24,21 @@ public class PaymentService {
         for (String str : paymentsDataList) {
             String[] tempArray = str.split(",");
             Timestamp date = getTimestamp(tempArray[0]);
-            if (customerRepo.get(tempArray[1]) == null) {
-                continue;
+            try {
+                if (customerRepo.getByName(tempArray[1]) == null) {
+                    continue;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            Customer customer = customerRepo.get(tempArray[1]);
-            Merchant merchant = merchantRepo.get(tempArray[2]);
+            Customer customer = null;
+            try {
+                customer = customerRepo.getByName(tempArray[1]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Merchant merchant = null;
+            merchant = merchantRepo.getByName(tempArray[2]);
             String productName = tempArray[3];
             double sumPaid = Double.valueOf(tempArray[4]);
             double chargePaid = 0.00;

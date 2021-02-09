@@ -56,9 +56,9 @@ public class MerchantService {
     }
 
     public void sendPaymentToMerchant(String merchantName) throws IOException, SQLException {
-        Merchant merchant = merchantRepo.get(merchantName);
-        double totalPay = paymentRepo.getPaymentsByMerchant(merchant.getId());
-        if (merchant.getMinSum() > totalPay) {
+        Merchant merchant = merchantRepo.getByName(merchantName);
+        double totalPay = paymentRepo.getPaymentsByMerchantId(merchant.getId());
+        if (merchant.getMinSum() < totalPay) {
             merchant.setSentAmount(totalPay);
             merchant.setNeedToSend(0.00);
             merchant.setLastSent(LocalDate.now());

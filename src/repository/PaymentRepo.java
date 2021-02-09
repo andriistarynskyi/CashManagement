@@ -1,18 +1,19 @@
 package repository;
 
 import entitites.Payment;
+import repository.utils.DbConnection;
 
 import java.io.IOException;
 import java.sql.*;
 import java.util.Set;
 
 public class PaymentRepo {
-    public void add(Set<Payment> paymentList) throws IOException, SQLException {
+    public void addAll(Set<Payment> paymentList){
         String sqlQuery = "INSERT INTO payments " +
                 "(dt, merchantId, customerId, goods, sumPaid, chargePaid) " +
                 "VALUES(?, ?, ?, ?, ?, ?)";
         try (
-                Connection conn = DbConnection.get();
+                Connection conn = DbConnection.getConnection();
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
         ) {
             for (Payment p : paymentList) {
@@ -25,6 +26,8 @@ public class PaymentRepo {
                 statement.addBatch();
             }
             statement.executeBatch();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
     }
 
@@ -34,7 +37,7 @@ public class PaymentRepo {
         String sqlQuery = "INSERT INTO payments (dt, merchantId, customerId, goods, " +
                 "sumPaid, chargePaid) values(?, ?, ?, ?, ?, ?)";
         try (
-                Connection conn = DbConnection.get();
+                Connection conn = DbConnection.getConnection();
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
         ) {
             statement.setTimestamp(1, timestamp);
@@ -47,11 +50,11 @@ public class PaymentRepo {
         }
     }
 
-    public double getPaymentsByMerchant(int merchantId) throws SQLException, IOException {
+    public double getPaymentsByMerchantId(int merchantId){
         double totalPay = 0;
         String sqlQuery = "SELECT SUM(sumPaid) AS allPayments FROM payments WHERE merchantId = ?";
         try (
-                Connection conn = DbConnection.get();
+                Connection conn = DbConnection.getConnection();
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
         ) {
             statement.setInt(1, merchantId);
@@ -59,6 +62,8 @@ public class PaymentRepo {
             while (rs.next()) {
                 totalPay = rs.getDouble("allPayments");
             }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
         return totalPay;
     }
