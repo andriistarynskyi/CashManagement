@@ -15,6 +15,18 @@ public class Payment {
     public Payment() {
     }
 
+    public Payment(int id, Timestamp date, Merchant merchant,
+                   Customer customer, String productName,
+                   double sumPaid, double chargePaid) {
+        this.id = id;
+        this.date = date;
+        this.merchant = merchant;
+        this.customer = customer;
+        this.productName = productName;
+        this.sumPaid = sumPaid;
+        this.chargePaid = chargePaid;
+    }
+
     public Payment(Timestamp date, Merchant merchant, Customer customer,
                    String productName, double sumPaid, double chargePaid) {
         this.date = date;

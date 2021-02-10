@@ -30,6 +30,6 @@ public class SeedDb {
         PaymentService paymentService = new PaymentService();
         Set<Payment> paymentsList = paymentService.getPaymentsFromFile();
         PaymentRepo paymentRepo = new PaymentRepo();
-        paymentRepo.addAll(paymentsList);
+        paymentRepo.saveAll(paymentsList);
     }
 }

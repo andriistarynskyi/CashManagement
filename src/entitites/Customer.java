@@ -1,6 +1,8 @@
 package entitites;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Customer {
@@ -11,6 +13,7 @@ public class Customer {
     private String ccNo;
     private String ccType;
     private LocalDate maturity;
+    private List<Payment> paymentsList = new ArrayList<>();
 
     public Customer() {
     }
@@ -35,6 +38,14 @@ public class Customer {
         this.ccNo = ccNo;
         this.ccType = ccType;
         this.maturity = maturity;
+    }
+
+    public List<Payment> getPaymentsList() {
+        return paymentsList;
+    }
+
+    public void setPaymentsList(List<Payment> paymentsList) {
+        this.paymentsList = paymentsList;
     }
 
     public int getId() {
@@ -103,6 +114,7 @@ public class Customer {
                 ", ccNo='" + ccNo + '\'' +
                 ", ccType='" + ccType + '\'' +
                 ", maturity=" + maturity +
+                ", paymentsList=" + paymentsList +
                 '}';
     }
 
@@ -111,11 +123,11 @@ public class Customer {
         if (this == o) return true;
         if (!(o instanceof Customer)) return false;
         Customer customer = (Customer) o;
-        return getId() == customer.getId() && getName().equals(customer.getName()) && getAddress().equals(customer.getAddress()) && getEmail().equals(customer.getEmail()) && getCcNo().equals(customer.getCcNo()) && getCcType().equals(customer.getCcType()) && getMaturity().equals(customer.getMaturity());
+        return getId() == customer.getId() && getName().equals(customer.getName()) && getAddress().equals(customer.getAddress()) && getEmail().equals(customer.getEmail()) && getCcNo().equals(customer.getCcNo()) && getCcType().equals(customer.getCcType()) && getMaturity().equals(customer.getMaturity()) && getPaymentsList().equals(customer.getPaymentsList());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getAddress(), getEmail(), getCcNo(), getCcType(), getMaturity());
+        return Objects.hash(getId(), getName(), getAddress(), getEmail(), getCcNo(), getCcType(), getMaturity(), getPaymentsList());
     }
 }

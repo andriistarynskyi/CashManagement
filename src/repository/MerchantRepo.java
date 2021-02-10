@@ -63,6 +63,24 @@ public class MerchantRepo {
         return merchant;
     }
 
+    public Merchant getById(int id){
+        Merchant merchant = null;
+        String sqlQuery = "SELECT * FROM merchants WHERE id = ?";
+        try (
+                Connection conn = DbConnection.getConnection();
+                PreparedStatement statement = conn.prepareStatement(sqlQuery);
+        ) {
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                merchant = getMerchant(rs);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return merchant;
+    }
+
     private Merchant getMerchant(ResultSet rs) throws SQLException {
         Merchant merchant = null;
         int id = rs.getInt("id");
@@ -113,8 +131,8 @@ public class MerchantRepo {
                 Connection conn = DbConnection.getConnection();
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
         ) {
-            statement.setDouble(1, merchant.getSentAmount());
-            statement.setDouble(2, merchant.getNeedToSend());
+            statement.setDouble(1, merchant.getNeedToSend());
+            statement.setDouble(2, merchant.getSentAmount());
             if (merchant.getLastSent() == null) {
                 statement.setNull(3, java.sql.Types.DATE);
             } else {
@@ -125,5 +143,24 @@ public class MerchantRepo {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+    }
+
+    public List<Merchant> getAll() {
+        List<Merchant> merchantsList = new ArrayList<>();
+        Merchant merchant = null;
+        String sqlQuery = "SELECT * FROM merchants";
+        try (
+                Connection conn = DbConnection.getConnection();
+                PreparedStatement statement = conn.prepareStatement(sqlQuery);
+        ) {
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                merchant = getMerchant(rs);
+                merchantsList.add(merchant);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return merchantsList;
     }
 }

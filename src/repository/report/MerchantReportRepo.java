@@ -1,7 +1,7 @@
-package repository;
+package repository.report;
 
-import entitites.Merchant;
 import entitites.report.MerchantReport;
+import repository.MerchantRepo;
 import repository.utils.DbConnection;
 
 import java.sql.Connection;
@@ -31,7 +31,6 @@ public class MerchantReportRepo {
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
         ) {
             ResultSet rs = statement.executeQuery();
-            Merchant merchant;
             while (rs.next()) {
                 String merchantName = rs.getString("merchantName");
                 double sumPaid = rs.getDouble("totalPaid");

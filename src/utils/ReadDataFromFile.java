@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 public class ReadDataFromFile {
 
-    public static List<String> get(String path) {
+    public static List<String> getFromFile(String path) {
         List<String> dataListFromFile = new ArrayList<>();
         try (BufferedReader reader = Files.newBufferedReader(Paths.get(path))) {
             Stream<String> lines = reader.lines().skip(1);

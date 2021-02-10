@@ -20,7 +20,7 @@ public class PaymentService {
         MerchantRepo merchantRepo = new MerchantRepo();
         Set<Payment> paymentsList = new HashSet<>();
         String path = "C:\\Users\\astar\\IdeaProjects\\CashManagement\\payments.dat";
-        List<String> paymentsDataList = ReadDataFromFile.get(path);
+        List<String> paymentsDataList = ReadDataFromFile.getFromFile(path);
         for (String str : paymentsDataList) {
             String[] tempArray = str.split(",");
             Timestamp date = getTimestamp(tempArray[0]);
@@ -28,13 +28,13 @@ public class PaymentService {
                 if (customerRepo.getByName(tempArray[1]) == null) {
                     continue;
                 }
-            } catch (IOException e) {
+            } catch (IOException | SQLException e) {
                 e.printStackTrace();
             }
             Customer customer = null;
             try {
                 customer = customerRepo.getByName(tempArray[1]);
-            } catch (IOException e) {
+            } catch (IOException | SQLException e) {
                 e.printStackTrace();
             }
             Merchant merchant = null;
@@ -51,5 +51,13 @@ public class PaymentService {
     public Timestamp getTimestamp(String str) {
         Timestamp date = Timestamp.valueOf(str);
         return date;
+    }
+
+    public Payment calculateCharge(Payment p) {
+        Payment payment = p;
+        double commissionRate = 0.02;
+        double chargePaid = p.getSumPaid() * commissionRate;
+        payment.setChargePaid(chargePaid);
+        return payment;
     }
 }
