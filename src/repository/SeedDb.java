@@ -8,11 +8,12 @@ import services.MerchantService;
 import services.PaymentService;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
 public class SeedDb {
-    public void saveAll() {
+    public void saveAll() throws SQLException {
         CustomerService customerService = new CustomerService();
         CustomerRepo customerRepo = new CustomerRepo();
         Set<Customer> customersList = customerService.getCustomersFromFile();

@@ -28,13 +28,13 @@ public class CustomerService {
             String email = tempArray[2];
             String ccNo = tempArray[3];
             String ccType = tempArray[4];
-            LocalDate maturity = getMaturityDate(tempArray[5]);
+            LocalDate maturity = parseDate(tempArray[5]);
             customerList.add(new Customer(name, address, email, ccNo, ccType, maturity));
         }
         return customerList;
     }
 
-    public LocalDate getMaturityDate(String str) {
+    public LocalDate parseDate(String str) {
         LocalDate date;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/M/dd");
         date = LocalDate.parse(str, formatter);

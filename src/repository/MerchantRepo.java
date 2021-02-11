@@ -63,7 +63,7 @@ public class MerchantRepo {
         return merchant;
     }
 
-    public Merchant getById(int id){
+    public Merchant getById(int id) {
         Merchant merchant = null;
         String sqlQuery = "SELECT * FROM merchants WHERE id = ?";
         try (
@@ -147,7 +147,6 @@ public class MerchantRepo {
 
     public List<Merchant> getAll() {
         List<Merchant> merchantsList = new ArrayList<>();
-        Merchant merchant = null;
         String sqlQuery = "SELECT * FROM merchants";
         try (
                 Connection conn = DbConnection.getConnection();
@@ -155,7 +154,7 @@ public class MerchantRepo {
         ) {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                merchant = getMerchant(rs);
+                Merchant merchant = getMerchant(rs);
                 merchantsList.add(merchant);
             }
         } catch (SQLException throwables) {

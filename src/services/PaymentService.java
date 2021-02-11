@@ -7,7 +7,6 @@ import repository.CustomerRepo;
 import repository.MerchantRepo;
 import utils.ReadDataFromFile;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashSet;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 public class PaymentService {
-    public Set<Payment> getPaymentsFromFile() {
+    public Set<Payment> getPaymentsFromFile() throws SQLException {
         CustomerRepo customerRepo = new CustomerRepo();
         MerchantRepo merchantRepo = new MerchantRepo();
         Set<Payment> paymentsList = new HashSet<>();
@@ -24,19 +23,11 @@ public class PaymentService {
         for (String str : paymentsDataList) {
             String[] tempArray = str.split(",");
             Timestamp date = getTimestamp(tempArray[0]);
-            try {
-                if (customerRepo.getByName(tempArray[1]) == null) {
-                    continue;
-                }
-            } catch (IOException | SQLException e) {
-                e.printStackTrace();
+            if (customerRepo.getByName(tempArray[1]) == null) {
+                continue;
             }
             Customer customer = null;
-            try {
-                customer = customerRepo.getByName(tempArray[1]);
-            } catch (IOException | SQLException e) {
-                e.printStackTrace();
-            }
+            customer = customerRepo.getByName(tempArray[1]);
             Merchant merchant = null;
             merchant = merchantRepo.getByName(tempArray[2]);
             String productName = tempArray[3];
