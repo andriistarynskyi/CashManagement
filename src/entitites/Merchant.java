@@ -1,6 +1,8 @@
 package entitites;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Merchant {
@@ -15,6 +17,7 @@ public class Merchant {
     private double needToSend;
     private double sentAmount;
     private LocalDate lastSent;
+    private List<Payment> paymentsList = new ArrayList<>();
 
     public Merchant() {
     }
@@ -34,6 +37,14 @@ public class Merchant {
         this.needToSend = needToSend;
         this.sentAmount = sentAmount;
         this.lastSent = lastSent;
+    }
+
+    public List<Payment> getPaymentsList() {
+        return paymentsList;
+    }
+
+    public void setPaymentsList(List<Payment> paymentsList) {
+        this.paymentsList = paymentsList;
     }
 
     public Merchant(String name, String bankName,

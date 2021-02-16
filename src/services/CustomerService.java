@@ -1,26 +1,22 @@
 package services;
 
 import entitites.Customer;
-import entitites.Payment;
 import repository.CustomerRepo;
-import repository.PaymentRepo;
-import utils.ReadDataFromFile;
+import utils.DataFileReader;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class CustomerService {
 
     CustomerRepo customerRepo = new CustomerRepo();
-    PaymentRepo paymentRepo = new PaymentRepo();
 
-    public Set<Customer> getCustomersFromFile() {
+    public List<Customer> getCustomersFromFile() {
         String path = "C:\\Users\\astar\\IdeaProjects\\CashManagement\\customers.dat";
-        Set<Customer> customerList = new HashSet<>();
-        List<String> customersData = ReadDataFromFile.getFromFile(path);
+        List<Customer> customerList = new ArrayList<>();
+        List<String> customersData = DataFileReader.getDataFromFile(path);
         for (String str : customersData) {
             String[] tempArray = str.split(",");
             String name = tempArray[0];
@@ -41,12 +37,8 @@ public class CustomerService {
         return date;
     }
 
-    public Customer getMostActiveCustomer(LocalDate startDate, LocalDate endDate) {
-        Customer customer;
-        customer = customerRepo.getMostActiveCustomerWithinTimeFrame(startDate, endDate);
-        List<Payment> paymentList = paymentRepo.getPaymentsByCustomerIdWithinTimeFrame(customer.getId(),
-                startDate, endDate);
-        customer.setPaymentsList(paymentList);
+    public Customer getByName(String name) {
+        Customer customer = customerRepo.getByName(name);
         return customer;
     }
 }

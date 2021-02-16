@@ -12,55 +12,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MerchantRepo {
-    public void saveAll(List<Merchant> merchantList) {
 
-        for (Merchant m : merchantList) {
-            String sqlQuery = "INSERT IGNORE INTO merchants " +
-                    "(name, bankName, swift, account, charge, period, minSum, needToSend, sent, lastSent) " +
-                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-            try (
-                    Connection conn = DbConnection.getConnection();
-                    PreparedStatement statement = conn.prepareStatement(sqlQuery);
-            ) {
-                statement.setString(1, m.getName());
-                statement.setString(2, m.getBankName());
-                statement.setString(3, m.getSwift());
-                statement.setString(4, m.getAccount());
-                statement.setDouble(5, m.getCharge());
-                statement.setInt(6, m.getPeriod());
-                statement.setDouble(7, m.getMinSum());
-                statement.setDouble(8, m.getNeedToSend());
-                statement.setDouble(9, m.getSentAmount());
-                if (m.getLastSent() == null) {
-                    statement.setNull(10, java.sql.Types.DATE);
-                } else {
-                    statement.setDate(10, java.sql.Date.valueOf(m.getLastSent()));
-                }
-                statement.addBatch();
-                statement.executeBatch();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        }
-    }
+    public void save(Merchant merchant) {
+        String sqlQuery = "INSERT INTO merchants " +
+                "(name, bankName, swift, account, charge, period, minSum, needToSend, sent, lastSent) " +
+                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    public Merchant getByName(String name) {
-        Merchant merchant = null;
-        String sqlQuery = "SELECT * FROM merchants WHERE name = ?";
         try (
                 Connection conn = DbConnection.getConnection();
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
         ) {
-            statement.setString(1, name);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                merchant = getMerchant(rs);
+            statement.setString(1, merchant.getName());
+            statement.setString(2, merchant.getBankName());
+            statement.setString(3, merchant.getSwift());
+            statement.setString(4, merchant.getAccount());
+            statement.setDouble(5, merchant.getCharge());
+            statement.setInt(6, merchant.getPeriod());
+            statement.setDouble(7, merchant.getMinSum());
+            statement.setDouble(8, merchant.getNeedToSend());
+            statement.setDouble(9, merchant.getSentAmount());
+            if (merchant.getLastSent() == null) {
+                statement.setNull(10, java.sql.Types.DATE);
+            } else {
+                statement.setDate(10, java.sql.Date.valueOf(merchant.getLastSent()));
             }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            statement.executeUpdate();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
         }
-        return merchant;
     }
 
     public Merchant getById(int id) {
@@ -72,17 +52,14 @@ public class MerchantRepo {
         ) {
             statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                merchant = getMerchant(rs);
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            merchant = getMerchant(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return merchant;
     }
 
     private Merchant getMerchant(ResultSet rs) throws SQLException {
-        Merchant merchant = null;
         int id = rs.getInt("id");
         String merchantName = rs.getString("name");
         String bankName = rs.getString("bankName");
@@ -99,28 +76,10 @@ public class MerchantRepo {
         } else {
             lastSent = rs.getDate("lastSent").toLocalDate();
         }
-        merchant = new Merchant(id, merchantName, bankName, swift, account,
+        Merchant merchant = new Merchant(id, merchantName, bankName, swift, account,
                 charge, period, minSum, needToSend, sent, lastSent);
 
         return merchant;
-    }
-
-    public List<Merchant> getAllInAlphabeticalOrder() {
-        List<Merchant> sortedMerchantsList = new ArrayList<>();
-        String sqlQuery = "SELECT * FROM merchants ORDER BY name";
-        try (
-                Connection conn = DbConnection.getConnection();
-                PreparedStatement statement = conn.prepareStatement(sqlQuery);
-        ) {
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                Merchant merchant = getMerchant(rs);
-                sortedMerchantsList.add(merchant);
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return sortedMerchantsList;
     }
 
     public void update(Merchant merchant) {
@@ -140,14 +99,33 @@ public class MerchantRepo {
             }
             statement.setString(4, merchant.getName());
             statement.executeUpdate();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
         }
     }
 
+    public Merchant getByName(String merChantName) {
+        Merchant merchant = null;
+        String sqlQuery = "SELECT * FROM merchants WHERE name= ?";
+        try (
+                Connection conn = DbConnection.getConnection();
+                PreparedStatement statement = conn.prepareStatement(sqlQuery);
+        ) {
+            statement.setString(1, merChantName);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                merchant = getMerchant(rs);
+            }
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return merchant;
+    }
+
     public List<Merchant> getAll() {
-        List<Merchant> merchantsList = new ArrayList<>();
+        List<Merchant> merchantList = new ArrayList<>();
         String sqlQuery = "SELECT * FROM merchants";
+
         try (
                 Connection conn = DbConnection.getConnection();
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
@@ -155,11 +133,11 @@ public class MerchantRepo {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 Merchant merchant = getMerchant(rs);
-                merchantsList.add(merchant);
+                merchantList.add(merchant);
             }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
         }
-        return merchantsList;
+        return merchantList;
     }
 }

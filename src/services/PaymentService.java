@@ -3,52 +3,45 @@ package services;
 import entitites.Customer;
 import entitites.Merchant;
 import entitites.Payment;
-import repository.CustomerRepo;
-import repository.MerchantRepo;
-import utils.ReadDataFromFile;
+import repository.PaymentRepo;
+import utils.DataFileReader;
 
-import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class PaymentService {
-    public Set<Payment> getPaymentsFromFile() throws SQLException {
-        CustomerRepo customerRepo = new CustomerRepo();
-        MerchantRepo merchantRepo = new MerchantRepo();
-        Set<Payment> paymentsList = new HashSet<>();
+    MerchantService merchantService = new MerchantService();
+    CustomerService customerService = new CustomerService();
+    PaymentRepo paymentRepo = new PaymentRepo();
+
+    public final double commissionRate = 0.02;
+
+    public List<Payment> getPaymentsFromFile() {
+        List<Payment> paymentsList = new ArrayList<>();
         String path = "C:\\Users\\astar\\IdeaProjects\\CashManagement\\payments.dat";
-        List<String> paymentsDataList = ReadDataFromFile.getFromFile(path);
+        List<String> paymentsDataList = DataFileReader.getDataFromFile(path);
         for (String str : paymentsDataList) {
             String[] tempArray = str.split(",");
-            Timestamp date = getTimestamp(tempArray[0]);
-            if (customerRepo.getByName(tempArray[1]) == null) {
+            Timestamp date = parseDate(tempArray[0]);
+            Customer customer = customerService.getByName(tempArray[1]);
+            if (customer == null) {
                 continue;
             }
-            Customer customer = null;
-            customer = customerRepo.getByName(tempArray[1]);
-            Merchant merchant = null;
-            merchant = merchantRepo.getByName(tempArray[2]);
+            Merchant merchant = merchantService.getByName(tempArray[2]);
+            if (merchant == null) {
+                continue;
+            }
             String productName = tempArray[3];
             double sumPaid = Double.valueOf(tempArray[4]);
-            double chargePaid = 0.00;
 
-            paymentsList.add(new Payment(date, merchant, customer, productName, sumPaid, chargePaid));
+            paymentsList.add(new Payment(date, merchant, customer, productName, sumPaid));
         }
         return paymentsList;
     }
 
-    public Timestamp getTimestamp(String str) {
+    public Timestamp parseDate(String str) {
         Timestamp date = Timestamp.valueOf(str);
         return date;
-    }
-
-    public Payment calculateCharge(Payment p) {
-        Payment payment = p;
-        double commissionRate = 0.02;
-        double chargePaid = p.getSumPaid() * commissionRate;
-        payment.setChargePaid(chargePaid);
-        return payment;
     }
 }

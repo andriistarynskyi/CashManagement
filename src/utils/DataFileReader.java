@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ReadDataFromFile {
+public class DataFileReader {
 
-    public static List<String> getFromFile(String path) {
+    public static List<String> getDataFromFile(String path) {
         List<String> dataListFromFile = new ArrayList<>();
         try (BufferedReader reader = Files.newBufferedReader(Paths.get(path))) {
             Stream<String> lines = reader.lines().skip(1);

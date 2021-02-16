@@ -23,8 +23,8 @@ public class DbConnection {
         String pass = props.getProperty("password");
         try {
             conn = DriverManager.getConnection(url, name, pass);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
         }
         return conn;
     }
