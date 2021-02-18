@@ -1,8 +1,10 @@
-package services;
+package service;
 
-import entitites.Customer;
-import entitites.Merchant;
-import entitites.Payment;
+import entity.Customer;
+import entity.Merchant;
+import entity.Payment;
+import repository.CustomerRepo;
+import repository.MerchantRepo;
 import repository.PaymentRepo;
 import utils.DataFileReader;
 
@@ -11,9 +13,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PaymentService {
-    MerchantService merchantService = new MerchantService();
-    CustomerService customerService = new CustomerService();
-    PaymentRepo paymentRepo = new PaymentRepo();
+    private PaymentRepo paymentRepo;
+    private MerchantRepo merchantRepo;
+    private CustomerRepo customerRepo;
+    private MerchantService merchantService;
+    private CustomerService customerService;
+
+    public PaymentService() {
+        this.paymentRepo = new PaymentRepo();
+        this.merchantRepo = new MerchantRepo();
+        this.customerRepo = new CustomerRepo();
+
+        this.paymentRepo.setMerchantRepo(merchantRepo);
+        this.paymentRepo.setCustomerRepo(customerRepo);
+        this.merchantService = new MerchantService();
+    }
 
     public final double commissionRate = 0.02;
 
@@ -43,5 +57,13 @@ public class PaymentService {
     public Timestamp parseDate(String str) {
         Timestamp date = Timestamp.valueOf(str);
         return date;
+    }
+
+    public List<Payment> getAll() {
+        return paymentRepo.getAll();
+    }
+
+    public List<Payment> getPaymentsByCustomerId(Customer customer) {
+        return paymentRepo.getByCustomer(customer);
     }
 }

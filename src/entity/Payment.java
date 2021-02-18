@@ -1,4 +1,4 @@
-package entitites;
+package entity;
 
 import java.sql.Timestamp;
 import java.util.Objects;

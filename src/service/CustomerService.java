@@ -1,7 +1,9 @@
-package services;
+package service;
 
-import entitites.Customer;
+import entity.Customer;
 import repository.CustomerRepo;
+import repository.MerchantRepo;
+import repository.PaymentRepo;
 import utils.DataFileReader;
 
 import java.time.LocalDate;
@@ -10,8 +12,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerService {
+    private CustomerRepo customerRepo;
+    private PaymentRepo paymentRepo;
+    private MerchantRepo merchantRepo;
 
-    CustomerRepo customerRepo = new CustomerRepo();
+    public CustomerService() {
+        this.customerRepo = new CustomerRepo();
+        this.merchantRepo = new MerchantRepo();
+        this.paymentRepo = new PaymentRepo();
+
+        this.customerRepo.setPaymentRepo(paymentRepo);
+        this.paymentRepo.setMerchantRepo(merchantRepo);
+        this.paymentRepo.setCustomerRepo(customerRepo);
+    }
 
     public List<Customer> getCustomersFromFile() {
         String path = "C:\\Users\\astar\\IdeaProjects\\CashManagement\\customers.dat";
@@ -38,7 +51,10 @@ public class CustomerService {
     }
 
     public Customer getByName(String name) {
-        Customer customer = customerRepo.getByName(name);
-        return customer;
+        return customerRepo.getByName(name, false);
+    }
+
+    public List<Customer> getAll() {
+        return customerRepo.getAll();
     }
 }

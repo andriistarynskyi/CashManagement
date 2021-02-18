@@ -1,7 +1,9 @@
-package services;
+package service;
 
-import entitites.Merchant;
+import entity.Merchant;
+import repository.CustomerRepo;
 import repository.MerchantRepo;
+import repository.PaymentRepo;
 import utils.DataFileReader;
 
 import java.time.LocalDate;
@@ -10,7 +12,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MerchantService {
-    MerchantRepo merchantRepo = new MerchantRepo();
+    private CustomerRepo customerRepo;
+    private MerchantRepo merchantRepo;
+    private PaymentRepo paymentRepo;
+
+    public MerchantService() {
+        this.customerRepo = new CustomerRepo();
+        this.merchantRepo = new MerchantRepo();
+        this.paymentRepo = new PaymentRepo();
+
+        this.merchantRepo.setPaymentRepo(paymentRepo);
+        this.paymentRepo.setCustomerRepo(customerRepo);
+        this.paymentRepo.setMerchantRepo(merchantRepo);
+    }
 
     public List<Merchant> getMerchantsFromFile() {
         String path = "C:\\Users\\astar\\IdeaProjects\\CashManagement\\merchants.dat";
@@ -52,16 +66,12 @@ public class MerchantService {
     }
 
     public Merchant getByName(String merchantName) {
-        Merchant merchant = merchantRepo.getByName(merchantName);
-        return merchant;
+        return merchantRepo.getByName(merchantName, false);
     }
 
-//    public void sentPaymentToMerchants() {
-//        List<Merchant> merchantList = merchantRepo.getAll();
-//        for (Merchant m : merchantList) {
-//            sendPaymentToMerchant(m.getName());
-//        }
-//    }
+    public List<Merchant> getAll() {
+        return merchantRepo.getAll();
+    }
 
     //    public void sendPaymentToMerchant(String merchantName) {
 //        Merchant merchant = merchantRepo.getByName(merchantName);

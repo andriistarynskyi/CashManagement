@@ -1,7 +1,6 @@
-package entitites;
+package entity;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,7 +16,7 @@ public class Merchant {
     private double needToSend;
     private double sentAmount;
     private LocalDate lastSent;
-    private List<Payment> paymentsList = new ArrayList<>();
+    private List<Payment> paymentsList;
 
     public Merchant() {
     }
@@ -166,6 +165,7 @@ public class Merchant {
                 ", needToSend=" + needToSend +
                 ", sentAmount=" + sentAmount +
                 ", lastSent=" + lastSent +
+                ", paymentsList=" + paymentsList +
                 '}';
     }
 

@@ -1,4 +1,4 @@
-package repository.utils;
+package DBUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

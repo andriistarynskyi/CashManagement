@@ -1,8 +1,8 @@
-package repository.report;
+package reportService;
 
-import entitites.report.MerchantReport;
+import entity.report.MerchantReport;
 import repository.MerchantRepo;
-import repository.utils.DbConnection;
+import DBUtils.DbConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,10 +36,10 @@ public class MerchantReportRepo {
                 double sumPaid = rs.getDouble("totalPaid");
                 double lastSent = rs.getDouble("lastSent");
 
-                merchantReports.add(new MerchantReport(merchantRepo.getByName(merchantName), sumPaid, lastSent));
+                merchantReports.add(new MerchantReport(merchantRepo.getByName(merchantName, true), sumPaid, lastSent));
             }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
         }
         return merchantReports;
     }

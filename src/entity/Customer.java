@@ -1,7 +1,6 @@
-package entitites;
+package entity;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,7 +12,7 @@ public class Customer {
     private String ccNo;
     private String ccType;
     private LocalDate maturity;
-    private List<Payment> paymentsList = new ArrayList<>();
+    private List<Payment> paymentsList;
 
     public Customer() {
     }

@@ -1,6 +1,6 @@
-package entitites.report;
+package entity.report;
 
-import entitites.Merchant;
+import entity.Merchant;
 
 import java.util.Objects;
 

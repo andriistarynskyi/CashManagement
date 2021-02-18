@@ -1,15 +1,23 @@
 package repository;
 
-import entitites.Customer;
-import repository.utils.DbConnection;
+import entity.Customer;
+import entity.Payment;
+import DBUtils.DbConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CustomerRepo {
+    private PaymentRepo paymentRepo;
+
+    public void setPaymentRepo(PaymentRepo paymentRepo) {
+        this.paymentRepo = paymentRepo;
+    }
 
     public void save(Customer customer) {
         String sqlQuery = "INSERT INTO customers(name, address, email, ccNo," +
@@ -32,16 +40,16 @@ public class CustomerRepo {
         }
     }
 
-    public Customer getByName(String name) {
+    public Customer getByName(String name, boolean isPaymentKnown) {
         Customer customer = null;
-        String sqlQuery = "SELECT * FROM customers WHERE name = ?";
+        String sqlQuery = "SELECT * FROM customers WHERE name =" + name;
         try (
                 Connection conn = DbConnection.getConnection();
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
         ) {
             statement.setString(1, name);
             ResultSet rs = statement.executeQuery();
-            customer = getCustomer(rs);
+            customer = getCustomer(rs, isPaymentKnown);
 
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -49,7 +57,7 @@ public class CustomerRepo {
         return customer;
     }
 
-    public Customer getById(int id) {
+    public Customer getById(int id, boolean isPaymentKnown) {
         Customer customer = null;
         String sqlQuery = "SELECT * FROM customers WHERE id =" + id;
         try (
@@ -57,25 +65,45 @@ public class CustomerRepo {
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
         ) {
             ResultSet rs = statement.executeQuery();
-            customer = getCustomer(rs);
+            while (rs.next()) {
+                customer = getCustomer(rs, isPaymentKnown);
+            }
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
         return customer;
     }
 
-    private Customer getCustomer(ResultSet rs) throws SQLException {
-        Customer customer = null;
-        while (rs.next()) {
-            int id = rs.getInt("id");
-            String customerName = rs.getString("name");
-            String address = rs.getString("address");
-            String email = rs.getString("email");
-            String ccNo = rs.getString("ccNo");
-            String ccType = rs.getString("ccType");
-            LocalDate maturity = rs.getDate("maturity").toLocalDate();
-            customer = new Customer(id, customerName, address, email, ccNo, ccType, maturity);
+    private Customer getCustomer(ResultSet rs, boolean isPaymentKnown) throws SQLException {
+        int id = rs.getInt("id");
+        String customerName = rs.getString("name");
+        String address = rs.getString("address");
+        String email = rs.getString("email");
+        String ccNo = rs.getString("ccNo");
+        String ccType = rs.getString("ccType");
+        LocalDate maturity = rs.getDate("maturity").toLocalDate();
+        Customer customer = new Customer(id, customerName, address, email, ccNo, ccType, maturity);
+        if (!isPaymentKnown) {
+            List<Payment> payments = paymentRepo.getByCustomer(customer);
+            customer.setPaymentsList(payments);
         }
         return customer;
+    }
+
+    public List<Customer> getAll() {
+        String sqlQuery = "SELECT * FROM customers";
+        List<Customer> customersList = new ArrayList<>();
+        try (
+                Connection conn = DbConnection.getConnection();
+                PreparedStatement statement = conn.prepareStatement(sqlQuery);
+        ) {
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                customersList.add(getCustomer(rs, false));
+            }
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return customersList;
     }
 }

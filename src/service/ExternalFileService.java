@@ -1,21 +1,21 @@
-package services;
+package service;
 
-import entitites.Customer;
-import entitites.Merchant;
-import entitites.Payment;
+import entity.Customer;
+import entity.Merchant;
+import entity.Payment;
 import repository.CustomerRepo;
 import repository.MerchantRepo;
 import repository.PaymentRepo;
 
 import java.util.List;
 
-public class SeedDbService {
+public class ExternalFileService {
     CustomerService customerService = new CustomerService();
     MerchantService merchantService = new MerchantService();
     PaymentService paymentService = new PaymentService();
 
-    CustomerRepo customerRepo = new CustomerRepo();
-    MerchantRepo merchantRepo = new MerchantRepo();
+    CustomerRepo customerRepo;
+    MerchantRepo merchantRepo;
     PaymentRepo paymentRepo = new PaymentRepo();
 
     public void saveDataFromFiles() {
@@ -32,8 +32,8 @@ public class SeedDbService {
         }
         System.out.println("Merchants from file were added");
 
-        List<Payment> paymentList = paymentService.getPaymentsFromFile();
-        for (Payment p : paymentList) {
+        List<Payment> paymentsFromFile = paymentService.getPaymentsFromFile();
+        for (Payment p : paymentsFromFile) {
             paymentRepo.save(p);
         }
         System.out.println("Payments from file were added");

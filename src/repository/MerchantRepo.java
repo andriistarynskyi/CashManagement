@@ -1,7 +1,8 @@
 package repository;
 
-import entitites.Merchant;
-import repository.utils.DbConnection;
+import DBUtils.DbConnection;
+import entity.Merchant;
+import entity.Payment;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,6 +14,11 @@ import java.util.List;
 
 public class MerchantRepo {
 
+    private PaymentRepo paymentRepo;
+
+    public void setPaymentRepo(PaymentRepo paymentRepo) {
+        this.paymentRepo = paymentRepo;
+    }
 
     public void save(Merchant merchant) {
         String sqlQuery = "INSERT INTO merchants " +
@@ -43,23 +49,24 @@ public class MerchantRepo {
         }
     }
 
-    public Merchant getById(int id) {
+    public Merchant getById(int id, boolean isPaymentKnown) {
         Merchant merchant = null;
-        String sqlQuery = "SELECT * FROM merchants WHERE id = ?";
+        String sqlQuery = "SELECT * FROM merchants WHERE id=" + id;
         try (
                 Connection conn = DbConnection.getConnection();
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
         ) {
-            statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
-            merchant = getMerchant(rs);
+            while (rs.next()) {
+                merchant = getMerchant(rs, isPaymentKnown);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return merchant;
     }
 
-    private Merchant getMerchant(ResultSet rs) throws SQLException {
+    private Merchant getMerchant(ResultSet rs, boolean isPaymentKnown) throws SQLException {
         int id = rs.getInt("id");
         String merchantName = rs.getString("name");
         String bankName = rs.getString("bankName");
@@ -78,6 +85,11 @@ public class MerchantRepo {
         }
         Merchant merchant = new Merchant(id, merchantName, bankName, swift, account,
                 charge, period, minSum, needToSend, sent, lastSent);
+
+        if (!isPaymentKnown) {
+            List<Payment> payments = paymentRepo.getByMerchant(merchant);
+            merchant.setPaymentsList(payments);
+        }
 
         return merchant;
     }
@@ -104,9 +116,9 @@ public class MerchantRepo {
         }
     }
 
-    public Merchant getByName(String merChantName) {
+    public Merchant getByName(String merChantName, boolean isPaymentKnown) {
         Merchant merchant = null;
-        String sqlQuery = "SELECT * FROM merchants WHERE name= ?";
+        String sqlQuery = "SELECT * FROM merchants WHERE name = ?";
         try (
                 Connection conn = DbConnection.getConnection();
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
@@ -114,7 +126,7 @@ public class MerchantRepo {
             statement.setString(1, merChantName);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                merchant = getMerchant(rs);
+                merchant = getMerchant(rs, isPaymentKnown);
             }
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -132,7 +144,7 @@ public class MerchantRepo {
         ) {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                Merchant merchant = getMerchant(rs);
+                Merchant merchant = getMerchant(rs, false);
                 merchantList.add(merchant);
             }
         } catch (SQLException throwable) {
