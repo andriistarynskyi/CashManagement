@@ -54,7 +54,16 @@ public class CustomerService {
         return customerRepo.getByName(name, false);
     }
 
+    public Customer getById(int id) {
+        return customerRepo.getById(id, false);
+    }
+
     public List<Customer> getAll() {
         return customerRepo.getAll();
+    }
+
+    public boolean save(Customer customer) {
+        customerRepo.save(customer);
+        return true;
     }
 }

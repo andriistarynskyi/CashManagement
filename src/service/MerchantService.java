@@ -9,6 +9,8 @@ import utils.DataFileReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MerchantService {
@@ -73,6 +75,27 @@ public class MerchantService {
         return merchantRepo.getAll();
     }
 
+    public boolean save(Merchant merchant) {
+        merchantRepo.save(merchant);
+        return true;
+    }
+
+    public Merchant getById(int merchantId) {
+        return merchantRepo.getById(merchantId, false);
+    }
+
+    public List<Merchant> getSortedListInAlphabeticalOrder() {
+        List<Merchant> merchantList = getAll();
+        Collections.sort(merchantList, new LexicographicComparator());
+        return merchantList;
+    }
+
+    class LexicographicComparator implements Comparator<Merchant> {
+        @Override
+        public int compare(Merchant a, Merchant b) {
+            return a.getName().compareToIgnoreCase(b.getName());
+        }
+    }
     //    public void sendPaymentToMerchant(String merchantName) {
 //        Merchant merchant = merchantRepo.getByName(merchantName);
 //        double totalPay = paymentRepo.getPaymentsByMerchantId(merchant.getId());

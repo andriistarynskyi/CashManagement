@@ -64,25 +64,16 @@ public class PaymentRepo {
     public List<Payment> getByCustomer(Customer customer) {
         List<Payment> paymentList = new ArrayList<>();
         String sqlQuery = "SELECT * FROM payments WHERE customerId=" + customer.getId();
-        try (
-                Connection conn = DbConnection.getConnection();
-                PreparedStatement statement = conn.prepareStatement(sqlQuery);
-        ) {
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                Payment p = getPayment(rs);
-                paymentList.add(p);
-            }
-
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-        return paymentList;
+        return getPayments(paymentList, sqlQuery);
     }
 
     public List<Payment> getByMerchant(Merchant merchant) {
         List<Payment> payments = new ArrayList<>();
         String sqlQuery = "SELECT * FROM payments WHERE merchantId=" + merchant.getId();
+        return getPayments(payments, sqlQuery);
+    }
+
+    private List<Payment> getPayments(List<Payment> payments, String sqlQuery) {
         try (
                 Connection conn = DbConnection.getConnection();
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
@@ -101,18 +92,6 @@ public class PaymentRepo {
     public List<Payment> getAll() {
         List<Payment> paymentsList = new ArrayList<>();
         String sqlQuery = "SELECT * FROM payments";
-        try (
-                Connection conn = DbConnection.getConnection();
-                PreparedStatement statement = conn.prepareStatement(sqlQuery);
-        ) {
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                Payment p = getPayment(rs);
-                paymentsList.add(p);
-            }
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-        return paymentsList;
+        return getPayments(paymentsList, sqlQuery);
     }
 }

@@ -43,7 +43,8 @@ public class MerchantRepo {
             } else {
                 statement.setDate(10, java.sql.Date.valueOf(merchant.getLastSent()));
             }
-            statement.executeUpdate();
+            statement.addBatch();
+            statement.executeBatch();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
@@ -90,7 +91,6 @@ public class MerchantRepo {
             List<Payment> payments = paymentRepo.getByMerchant(merchant);
             merchant.setPaymentsList(payments);
         }
-
         return merchant;
     }
 
@@ -116,14 +116,14 @@ public class MerchantRepo {
         }
     }
 
-    public Merchant getByName(String merChantName, boolean isPaymentKnown) {
+    public Merchant getByName(String merchantName, boolean isPaymentKnown) {
         Merchant merchant = null;
         String sqlQuery = "SELECT * FROM merchants WHERE name = ?";
         try (
                 Connection conn = DbConnection.getConnection();
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
         ) {
-            statement.setString(1, merChantName);
+            statement.setString(1, merchantName);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 merchant = getMerchant(rs, isPaymentKnown);

@@ -2,17 +2,18 @@ package entity.report;
 
 import entity.Merchant;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class MerchantReport {
     private Merchant merchant;
     private double totalSumPaid;
-    private double lastSent;
+    private LocalDate lastSent;
 
     public MerchantReport() {
     }
 
-    public MerchantReport(Merchant merchant, double totalSumPaid, double lastSent) {
+    public MerchantReport(Merchant merchant, double totalSumPaid, LocalDate lastSent) {
         this.merchant = merchant;
         this.totalSumPaid = totalSumPaid;
         this.lastSent = lastSent;
@@ -34,11 +35,11 @@ public class MerchantReport {
         this.totalSumPaid = totalSumPaid;
     }
 
-    public double getLastSent() {
+    public LocalDate getLastSent() {
         return lastSent;
     }
 
-    public void setLastSent(double lastSent) {
+    public void setLastSent(LocalDate lastSent) {
         this.lastSent = lastSent;
     }
 
@@ -56,7 +57,7 @@ public class MerchantReport {
         if (this == o) return true;
         if (!(o instanceof MerchantReport)) return false;
         MerchantReport that = (MerchantReport) o;
-        return Double.compare(that.getTotalSumPaid(), getTotalSumPaid()) == 0 && Double.compare(that.getLastSent(), getLastSent()) == 0 && getMerchant().equals(that.getMerchant());
+        return Double.compare(that.getTotalSumPaid(), getTotalSumPaid()) == 0 && Objects.equals(getMerchant(), that.getMerchant()) && Objects.equals(getLastSent(), that.getLastSent());
     }
 
     @Override

@@ -27,6 +27,7 @@ public class PaymentService {
         this.paymentRepo.setMerchantRepo(merchantRepo);
         this.paymentRepo.setCustomerRepo(customerRepo);
         this.merchantService = new MerchantService();
+        this.customerService = new CustomerService();
     }
 
     public final double commissionRate = 0.02;
@@ -65,5 +66,10 @@ public class PaymentService {
 
     public List<Payment> getPaymentsByCustomerId(Customer customer) {
         return paymentRepo.getByCustomer(customer);
+    }
+
+    public boolean save(Payment payment) {
+        paymentRepo.save(payment);
+        return true;
     }
 }

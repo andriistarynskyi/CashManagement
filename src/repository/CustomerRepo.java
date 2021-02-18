@@ -1,8 +1,8 @@
 package repository;
 
+import DBUtils.DbConnection;
 import entity.Customer;
 import entity.Payment;
-import DBUtils.DbConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -42,14 +42,16 @@ public class CustomerRepo {
 
     public Customer getByName(String name, boolean isPaymentKnown) {
         Customer customer = null;
-        String sqlQuery = "SELECT * FROM customers WHERE name =" + name;
+        String sqlQuery = "SELECT * FROM customers WHERE name = ?";
         try (
                 Connection conn = DbConnection.getConnection();
                 PreparedStatement statement = conn.prepareStatement(sqlQuery);
         ) {
             statement.setString(1, name);
             ResultSet rs = statement.executeQuery();
-            customer = getCustomer(rs, isPaymentKnown);
+            while (rs.next()) {
+                customer = getCustomer(rs, isPaymentKnown);
+            }
 
         } catch (SQLException throwable) {
             throwable.printStackTrace();
