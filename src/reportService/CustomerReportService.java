@@ -40,7 +40,6 @@ public class CustomerReportService {
         return customerIds;
     }
 
-    //check the method.
     public Integer getMostCommonCustomerId(List<Integer> customerIds) {
         Collections.sort(customerIds);
         int mostCommonId = 0;
