@@ -32,7 +32,7 @@ public class CustomerReportService {
         return payments;
     }
 
-    public List<Integer> getCustomerIds(List<Payment> paymentsWithinInterval) {
+    private List<Integer> getCustomerIds(List<Payment> paymentsWithinInterval) {
         List<Integer> customerIds = new ArrayList<>();
         for (Payment p : paymentsWithinInterval) {
             customerIds.add(p.getCustomer().getId());
@@ -40,7 +40,7 @@ public class CustomerReportService {
         return customerIds;
     }
 
-    public Integer getMostCommonCustomerId(List<Integer> customerIds) {
+    private Integer getMostCommonCustomerId(List<Integer> customerIds) {
         Collections.sort(customerIds);
         int mostCommonId = 0;
         int lastId = 0;

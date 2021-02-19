@@ -38,7 +38,7 @@ public class PaymentService {
         List<String> paymentsDataList = DataFileReader.getDataFromFile(path);
         for (String str : paymentsDataList) {
             String[] tempArray = str.split(",");
-            Timestamp date = parseDate(tempArray[0]);
+            Timestamp date = parseTimestamp(tempArray[0]);
             Customer customer = customerService.getByName(tempArray[1]);
             if (customer == null) {
                 continue;
@@ -55,7 +55,7 @@ public class PaymentService {
         return paymentsList;
     }
 
-    public Timestamp parseDate(String str) {
+    public Timestamp parseTimestamp(String str) {
         Timestamp date = Timestamp.valueOf(str);
         return date;
     }
