@@ -1,6 +1,7 @@
 package service;
 
 import entity.Merchant;
+import entity.Payment;
 import repository.CustomerRepo;
 import repository.MerchantRepo;
 import repository.PaymentRepo;
@@ -26,7 +27,8 @@ public class MerchantService {
         this.merchantRepo.setPaymentRepo(paymentRepo);
         this.paymentRepo.setCustomerRepo(customerRepo);
         this.paymentRepo.setMerchantRepo(merchantRepo);
-    }
+
+     }
 
     public List<Merchant> getMerchantsFromFile() {
         String path = "C:\\Users\\astar\\IdeaProjects\\CashManagement\\merchants.dat";
@@ -96,21 +98,24 @@ public class MerchantService {
             return a.getName().compareToIgnoreCase(b.getName());
         }
     }
-    //    public void sendPaymentToMerchant(String merchantName) {
-//        Merchant merchant = merchantRepo.getByName(merchantName);
-//        double totalPay = paymentRepo.getPaymentsByMerchantId(merchant.getId());
-//        if (merchant.getMinSum() > totalPay) {
-//            merchant.setNeedToSend(totalPay);
-//            merchant.setSentAmount(0.00);
-//            merchant.setLastSent(null);
-//        } else {
-//            merchant.setNeedToSend(0.00);
-//            merchant.setSentAmount(totalPay);
-//            merchant.setLastSent(LocalDate.now());
-//        }
-//        merchantRepo.update(merchant);
-//        System.out.println("The payment records for " + merchant.getName() +
-//                " was updated on " + LocalDate.now() + ".");
-//    }
-//
+
+    public boolean sendFundsToMerchants(Merchant merchant) {
+        double totalSumPaid = getTotalSumPaid(merchant);
+        if (merchant.getMinSum() < totalSumPaid) {
+            merchant.setSentAmount(totalSumPaid);
+            merchant.setLastSent(LocalDate.now());
+            merchant.setNeedToSend(0.00);
+            merchantRepo.update(merchant);
+            System.out.println(merchant.getName() + " Payment records were updated.");
+        }
+        return true;
+    }
+
+    public double getTotalSumPaid(Merchant merchant) {
+        double totalSumPaid = 0;
+        for(Payment p : merchant.getPaymentsList()) {
+            totalSumPaid += p.getSumPaid();
+        }
+        return totalSumPaid;
+    }
 }

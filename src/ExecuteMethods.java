@@ -1,6 +1,7 @@
 import entity.Customer;
 import entity.Merchant;
 import entity.Payment;
+import reportService.CustomerReportService;
 import reportService.MerchantReportService;
 import service.CustomerService;
 import service.FileReaderService;
@@ -8,6 +9,7 @@ import service.MerchantService;
 import service.PaymentService;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 
 public class ExecuteMethods {
 
@@ -17,6 +19,7 @@ public class ExecuteMethods {
         MerchantService merchantService = new MerchantService();
         FileReaderService fileReaderService = new FileReaderService();
         MerchantReportService merchantReportService = new MerchantReportService();
+        CustomerReportService customerReportService = new CustomerReportService();
 
 //        seed data from files
         fileReaderService.saveDataFromFiles();
@@ -60,11 +63,20 @@ public class ExecuteMethods {
                 merchantService.getById(1),
                 customerService.getById(7),
                 "Carpet",
-                3508.10));
+                35008.10));
 //        Create a method that will send funds to a merchant if the needToSend>minSum.
 //        This method should update the sent and lastSent columns in the Merchant table
 
+        for (Merchant m : merchantService.getAll()) {
+            merchantService.sendFundsToMerchants(m);
+        }
+
 //        Find the most active customer based on the number of order within the passed in time period
 //        (ie week, month, quarter, year). The resulting Customer object should contain the list of all Payments made.
+
+        System.out.println(customerReportService.getMostActiveCustomer(
+                LocalDate.of(2017, 1, 5),
+                LocalDate.of(2021, 2, 3)
+        ));
     }
 }
